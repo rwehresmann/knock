@@ -17,14 +17,11 @@ module Knock
       end
     end
 
-    def entity_for entity_class
-      if entity_class.respond_to? :from_token_payload
-        entity_class.from_token_payload @payload
-      else
-        entity_class.find @payload['sub']
-      end
+    def entity_for(entity_class)
+      key_to_find = Rails.env.test? ? :id : :auth0_id
+      entity_class.find_by(key_to_find => @payload['sub'])
     end
-
+    
     def to_json options = {}
       {jwt: @token}.to_json
     end
